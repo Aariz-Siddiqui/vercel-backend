@@ -17,6 +17,13 @@ const corsOption = { //to let our browser know that we have hosted our frontend 
 app.use(cors(corsOption)); //
 
 app.use(express.json());
+
+app.get("/", (req, res) => {
+    res.status(200).send("Welcome from the backend");
+});
+
+
+
 app.use("/api/auth",authRouter); //this means any request at the path "localhost:8000/api/auth" will be handled by auth-router i.e(express router0)
 app.use("/api",authContact);
 app.use("/data",authService);
