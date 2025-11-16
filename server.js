@@ -1,33 +1,41 @@
-// server.js — CORS section (replace your current corsOptions)
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+require('dotenv').config();
+const express = require('express');
+const app =  express();
+const authRouter = require('./router/auth-router');
+const authContact = require("./router/contact-router");
+const authService = require("./router/service-router");
+const adminRouter = require("./router/admin-router");
+const connectdb = require('./utils/db');
+const errorMiddleware = require("./middlewares/error-middleware");
+const cors = require("cors");
 
-const allowedExplicit = [
-  FRONTEND_URL,
-  'http://localhost:5173',
-  'https://vercel-frontend-five-bay.vercel.app',
-  'https://vercel-frontend-1qyt3691y-aariz-siddiquis-projects.vercel.app' // add this exact origin
-];
+const corsOption = { //to let our browser know that we have hosted our frontend on port 5173
+    origin:"http://localhost:5173",
+    
+    methods:"GET,POST,PUT,PATCH,DELETE,HEAD",
+    credentials:true
+}
+app.use(cors(corsOption)); //
 
-// allow any vercel.app preview subdomain automatically
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // allow curl/postman/no-origin
-    try {
-      const url = new URL(origin);
-      // allow exact explicit origins OR any subdomain of vercel.app
-      if (allowedExplicit.includes(origin) || url.hostname.endsWith('.vercel.app')) {
-        return callback(null, true);
-      }
-    } catch (e) {
-      // invalid origin, fall through to deny
-    }
-    return callback(new Error('CORS policy: origin not allowed'), false);
-  },
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  allowedHeaders: ['Content-Type','Authorization','X-Requested-With','Accept'],
-  credentials: true,
-  maxAge: 600
-};
+app.use(express.json());
 
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.get("/", (req, res) => {
+    res.status(200).send("Welcome from the backend");
+});
+
+
+
+app.use("/api/auth",authRouter); //this means any request at the path "localhost:8000/api/auth" will be handled by auth-router i.e(express router0)
+app.use("/api",authContact);
+app.use("/data",authService);
+app.use("/api/admin",adminRouter);
+app.use(errorMiddleware);
+
+
+
+const PORT = 8000;
+
+connectdb().then(
+app.listen(PORT, ()=>{
+    console.log(`Server is up and running on the Port ${PORT}`)
+}));
