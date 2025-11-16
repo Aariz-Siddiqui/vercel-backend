@@ -10,7 +10,7 @@ const errorMiddleware = require("./middlewares/error-middleware");
 const cors = require("cors");
 
 const corsOption = { //to let our browser know that we have hosted our frontend on port 5173
-    origin:"https://vercel-backend-eight-chi.vercel.app",
+    origin:"https://vercel-frontend-five-bay.vercel.app",
     
     methods:"GET,POST,PUT,PATCH,DELETE,HEAD",
     credentials:true
